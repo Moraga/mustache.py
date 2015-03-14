@@ -63,7 +63,7 @@ def render(txt, var):
                     tmp += c
             else:
                 if tmp:
-                    c += tmp
+                    c = tmp + c
                     tmp = ''
                 cur = 0
                 if rtv:
