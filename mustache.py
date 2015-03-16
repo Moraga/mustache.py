@@ -22,14 +22,14 @@ def render(txt, var):
                         if '/' + rtv == mke:
                             if rtv in var:
                                 if type(var[rtv]) == list:
-                                    for var in var[rtv]:
-                                        ret += render(rtt, var)
+                                    for sub in var[rtv]:
+                                        ret += render(rtt, sub)
                                 else:
                                     ret += render(rtt, var[rtv])
                             rtv = ''
                             rtt = ''
                         else:
-                            rtt += '{{' + mke + '}}'
+                            rtt += stw + mke + end
                     else:
                         if mke[:1] == '#':
                             rtv = mke[1:]
