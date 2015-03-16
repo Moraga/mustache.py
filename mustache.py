@@ -19,19 +19,22 @@ def render(txt, var):
                 cur += 1
                 if cur == len(enw):
                     if rtv:
-                        if '/' + rtv == mke:
-                            if rtv in var:
-                                if type(var[rtv]) == list:
+                        if mke[:1] == '/' and mke[1:] == rtv:
+                            if ope == '#' and rtv in var and var[rtv]:
+                                if var[rtv].__class__ == list:
                                     for sub in var[rtv]:
                                         ret += render(rtt, sub)
                                 else:
                                     ret += render(rtt, var[rtv])
+                            elif ope == '^' and (not rtv in var or not var[rtv]):
+                                ret += render(rtt, var)
                             rtv = ''
                             rtt = ''
                         else:
-                            rtt += stw + mke + end
+                            rtt += stw + mke + enw
                     else:
-                        if mke[:1] == '#':
+                        if mke[:1] in ('#', '^'):
+                            ope = mke[:1]
                             rtv = mke[1:]
                         else:
                             if mke == '.':
