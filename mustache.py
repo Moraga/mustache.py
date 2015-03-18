@@ -49,6 +49,7 @@ def parse(txt, var):
                                 ret += parse(rtt, var)
                             rtv = ''
                             rtt = ''
+                            stk = 0
                         # another
                         else:
                             if mke == rtv:
