@@ -33,8 +33,8 @@ def parse(txt, var):
                         if ctx.__class__ == dict and mke in ctx:
                             val = ctx[mke]
                             break
-                        else:
-                            val = ''
+                    else:
+                        val = ''
                     # condition dependent
                     if rtv:
                         # closing previous
