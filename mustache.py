@@ -1,6 +1,9 @@
 
 
 def render(txt, var):
+    return parse(txt, [var])
+
+def parse(txt, var):
     stw = '{{'
     enw = '}}'
     cur = 0
@@ -10,37 +13,60 @@ def render(txt, var):
     rtv = ''
     rtt = ''
     tmp = ''
+    stk = 0
 
     for c in txt:
-        ## parsing
+        # parsing code
         if prs:
-            ## instruction end
+            # instruction end
             if c == enw[cur]:
                 cur += 1
                 if cur == len(enw):
+                    # variable and operator
+                    if mke[:1] in ('#', '^', '/'):
+                        ope = mke[:1]
+                        mke = mke[1:]
+                    else:
+                        ope = ''
+                    # search for value in multiple contexts
+                    for ctx in var:
+                        if ctx.__class__ == dict and mke in ctx:
+                            val = ctx[mke]
+                            break
+                        else:
+                            val = ''
+                    # condition dependent
                     if rtv:
-                        if mke[:1] == '/' and mke[1:] == rtv:
-                            if ope == '#' and rtv in var and var[rtv]:
-                                if var[rtv].__class__ == list:
-                                    for sub in var[rtv]:
-                                        ret += render(rtt, sub)
+                        # closing previous
+                        if ope == '/' and mke == rtv and stk == 1:
+                            if prv == '#' and val:
+                                if val.__class__ == list:
+                                    for sub in val:
+                                        ret += parse(rtt, [sub] + var)
                                 else:
-                                    ret += render(rtt, var[rtv])
-                            elif ope == '^' and (not rtv in var or not var[rtv]):
-                                ret += render(rtt, var)
+                                    ret += parse(rtt, [val] + var)
+                            elif prv == '^' and not val:
+                                ret += parse(rtt, var)
                             rtv = ''
                             rtt = ''
+                        # another
                         else:
-                            rtt += stw + mke + enw
+                            if mke == rtv:
+                                if ope == '#':
+                                    stk += 1
+                                elif ope == '/':
+                                    stk -= 1
+                            rtt += stw + ope + mke + enw
                     else:
-                        if mke[:1] in ('#', '^'):
-                            ope = mke[:1]
-                            rtv = mke[1:]
+                        if ope:
+                            prv = ope
+                            rtv = mke
+                            stk += 1
                         else:
                             if mke == '.':
-                                ret += var
-                            elif mke in var:
-                                ret += var[mke]
+                                ret += str(var[0])
+                            else:
+                                ret += str(val)
                     prs = False
                     cur = 0
                     mke = ''
@@ -48,12 +74,13 @@ def render(txt, var):
             else:
                 cur = 0
             
-            ## skip chars
+            # skip these chars
             if c in ('\t', ' '):
                 continue
 
-            ## instrution
+            # instruction
             mke += c
+        # text
         else:
             if c == stw[cur]:
                 cur += 1
