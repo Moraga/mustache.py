@@ -65,9 +65,9 @@ def parse(txt, var):
                             stk += 1
                         else:
                             if mke == '.':
-                                ret += str(var[0])
+                                ret += var[0].__str__()
                             else:
-                                ret += str(val)
+                                ret += val.__str__()
                     prs = False
                     cur = 0
                     mke = ''
